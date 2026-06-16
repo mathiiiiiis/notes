@@ -32,13 +32,13 @@ object NoteText {
     }
 
     fun previewOf(content: String): String {
-        val lines =
-            content
-                .lineSequence()
-                .map { stripImages(it.trim()) }
-                .filter { it.isNotEmpty() }
-                .toList()
-        return if (lines.size <= 1) "" else lines.drop(1).joinToString(" ")
+        val lines = content.lines()
+        val titleIndex = lines.indexOfFirst { it.isNotBlank() }
+        if (titleIndex == -1) return ""
+        return lines.drop(titleIndex + 1)
+            .joinToString("\n") { stripImages(it) }
+            .replace(Regex("\\n{3,}"), "\n\n")
+            .trimEnd('\n')
     }
 
     fun shortDate(millis: Long): String = DateFormat.getDateInstance(DateFormat.MEDIUM).format(Date(millis))
