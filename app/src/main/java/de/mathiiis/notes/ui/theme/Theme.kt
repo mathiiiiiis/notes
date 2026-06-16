@@ -2,19 +2,21 @@ package de.mathiiis.notes.ui.theme
 
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.MaterialExpressiveTheme
 import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 
 /**
- * Root theme
+ * Root theme, now Material 3 Expressive.
  *
- * > follows system light or dark setting
- * > on android 12+ prefers dynamic colors
- * > otherwise falls back to own theme
+ * > MaterialExpressiveTheme defaults to the expressive motion scheme and shapes
+ * > follows the system light or dark setting
+ * > prefers wallpaper dynamic color on android 12 and up, else the indigo schemes
  */
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun NotesTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
@@ -31,7 +33,7 @@ fun NotesTheme(
         else -> LightColors
     }
 
-    MaterialTheme(
+    MaterialExpressiveTheme(
         colorScheme = colors,
         typography = NotesTypography,
         content = content,

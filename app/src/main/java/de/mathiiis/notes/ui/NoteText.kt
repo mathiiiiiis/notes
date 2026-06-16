@@ -16,7 +16,8 @@ object NoteText {
 
     fun titleOf(content: String): String {
         val firstLine = content.lineSequence().firstOrNull { it.isNotBlank() }?.trim()
-        return if (firstLine.isNullOrEmpty()) UNTITLED else firstLine
+        val cleaned = firstLine?.trimStart('#', '*', '>', '-', ' ')?.trim()
+        return if (cleaned.isNullOrEmpty()) UNTITLED else cleaned
     }
 
     fun previewOf(content: String): String {

@@ -64,12 +64,12 @@ dependencies {
     implementation("androidx.activity:activity-compose:1.9.3")
 
     // ==== compose ====
-    val composeBom = platform("androidx.compose:compose-bom:2024.10.01")
+    val composeBom = platform("androidx.compose:compose-bom:2025.10.01")
     implementation(composeBom)
     implementation("androidx.compose.ui:ui")
     implementation("androidx.compose.ui:ui-graphics")
     implementation("androidx.compose.ui:ui-tooling-preview")
-    implementation("androidx.compose.material3:material3")
+    implementation("androidx.compose.material3:material3:1.5.0-alpha07")
     implementation("androidx.compose.material:material-icons-extended")
     implementation("androidx.navigation:navigation-compose:2.8.3")
 
@@ -80,4 +80,9 @@ dependencies {
 
     // ==== debug tooling ====
     debugImplementation("androidx.compose.ui:ui-tooling")
+    
+    // ==== markdown + images ====
+    implementation("com.mikepenz:multiplatform-markdown-renderer:0.38.1")
+    implementation("com.mikepenz:multiplatform-markdown-renderer-m3:0.38.1")
+    implementation("com.mikepenz:multiplatform-markdown-renderer-coil3:0.38.1")
 }
