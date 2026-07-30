@@ -48,13 +48,13 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.SwipeToDismissBox
+import androidx.compose.material3.SwipeToDismissBoxState
 import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.material3.toShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -63,6 +63,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -73,6 +74,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
@@ -83,11 +85,14 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import de.mathiiis.notes.R
 import de.mathiiis.notes.data.Note
 import kotlinx.coroutines.launch
+
+private val SwipeThreshold: Dp = 56.dp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -286,24 +291,33 @@ private fun SwipeableNoteCard(
     onPinToggle: () -> Unit,
     onDelete: () -> Unit,
 ) {
+    val scope = rememberCoroutineScope()
+    val density = LocalDensity.current
+
     val state =
-        rememberSwipeToDismissBoxState(
-            confirmValueChange = { value ->
-                when (value) {
-                    SwipeToDismissBoxValue.EndToStart -> {
-                        onDelete()
-                        true
-                    }
+        remember(note.id, density) {
+            SwipeToDismissBoxState(
+                initialValue = SwipeToDismissBoxValue.Settled,
+                positionalThreshold = { with(density) { SwipeThreshold.toPx() } },
+            )
+        }
 
-                    SwipeToDismissBoxValue.StartToEnd -> {
-                        onPinToggle()
-                        false
-                    }
+    val pinToggle by rememberUpdatedState(onPinToggle)
+    val delete by rememberUpdatedState(onDelete)
 
-                    SwipeToDismissBoxValue.Settled -> true
-                }
-            },
-        )
+    val settled = state.settledValue
+    LaunchedEffect(settled) {
+        when (settled) {
+            SwipeToDismissBoxValue.StartToEnd -> {
+                pinToggle()
+                scope.launch { state.reset() }
+            }
+
+            SwipeToDismissBoxValue.EndToStart -> delete()
+
+            SwipeToDismissBoxValue.Settled -> Unit
+        }
+    }
 
     SwipeToDismissBox(
         state = state,
