@@ -218,6 +218,7 @@ fun NotesListScreen(
                     items(notes, key = { it.id }) { note ->
                         SwipeableNoteCard(
                             note = note,
+                            modifier = Modifier.animateItem(),
                             onClick = { onOpen(note.id) },
                             onPinToggle = { viewModel.setPinned(note.id, !note.pinned) },
                             onDelete = {
@@ -307,6 +308,7 @@ private fun SwipeableNoteCard(
     onClick: () -> Unit,
     onPinToggle: () -> Unit,
     onDelete: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     val scope = rememberCoroutineScope()
     val density = LocalDensity.current
@@ -345,6 +347,7 @@ private fun SwipeableNoteCard(
 
     SwipeToDismissBox(
         state = state,
+        modifier = modifier,
         backgroundContent = {
             SwipeBackground(direction = state.dismissDirection, pinned = note.pinned)
         },
