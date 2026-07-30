@@ -16,6 +16,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
+import androidx.compose.material.icons.outlined.PushPin
 import androidx.compose.material.icons.rounded.CheckBox
 import androidx.compose.material.icons.rounded.Code
 import androidx.compose.material.icons.rounded.DeleteOutline
@@ -194,7 +195,12 @@ fun NoteEditScreen(
                             },
                         ) {
                             Icon(
-                                Icons.Rounded.PushPin,
+                                imageVector =
+                                    if (pinned) {
+                                        Icons.Rounded.PushPin
+                                    } else {
+                                        Icons.Outlined.PushPin
+                                    },
                                 contentDescription =
                                     stringResource(
                                         if (pinned) R.string.unpin else R.string.pin,
