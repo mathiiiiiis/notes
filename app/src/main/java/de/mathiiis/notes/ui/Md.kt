@@ -78,23 +78,25 @@ object Md {
         val lines = block.split('\n')
         val allPrefixed = lines.all { it.trimStart().startsWith(prefix.trim()) && it.isNotBlank() }
 
-        val rebuilt =
-            lines
-                .joinToString("\n") { line ->
-                    if (allPrefixed) {
-                        line.replaceFirst(Regex("^\\s*" + Regex.escape(prefix.trim()) + "\\s?"), "")
-                    } else {
-                        prefix + line
-                    }
+        val rebuiltLines =
+            lines.map { line ->
+                if (allPrefixed) {
+                    line.replaceFirst(Regex("^\\s*" + Regex.escape(prefix.trim()) + "\\s?"), "")
+                } else {
+                    prefix + line
                 }
+            }
+        val rebuilt = rebuiltLines.joinToString("\n")
 
         val next = text.substring(0, lineStart) + rebuilt + text.substring(lineEnd)
         val delta = rebuilt.length - block.length
+
+        val firstDelta = rebuiltLines.first().length - lines.first().length
         return TextFieldValue(
             text = next,
             selection =
                 TextRange(
-                    selStart.coerceAtMost(next.length),
+                    (selStart + firstDelta).coerceIn(lineStart, next.length),
                     (selEnd + delta).coerceIn(0, next.length),
                 ),
         )

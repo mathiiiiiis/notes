@@ -87,6 +87,33 @@ class MdTest {
     }
 
     @Test
+    fun `linePrefix keeps a collapsed caret collapsed`() {
+        val value = TextFieldValue("todo", TextRange(4))
+        val result = Md.linePrefix(value, "- ")
+
+        assertEquals("- todo", result.text)
+        assertEquals(TextRange(6), result.selection)
+    }
+
+    @Test
+    fun `linePrefix pulls the caret back when the prefix is stripped`() {
+        val value = TextFieldValue("- todo", TextRange(6))
+        val result = Md.linePrefix(value, "- ")
+
+        assertEquals("todo", result.text)
+        assertEquals(TextRange(4), result.selection)
+    }
+
+    @Test
+    fun `linePrefix shifts both ends of a selection past the prefix`() {
+        val value = TextFieldValue("hello", TextRange(2, 5))
+        val result = Md.linePrefix(value, "# ")
+
+        assertEquals("# hello", result.text)
+        assertEquals(TextRange(4, 7), result.selection)
+    }
+
+    @Test
     fun `linePrefix leaves untouched lines alone`() {
         val value = TextFieldValue("a\nb\nc", TextRange(0, 1))
         val result = Md.linePrefix(value, "# ")
