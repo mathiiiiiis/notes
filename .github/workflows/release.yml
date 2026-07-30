@@ -1,15 +1,5 @@
 name: release
 
-# ==== builds the signed aab that gets uploaded to play ====
-# play distributes app bundles, not apks, so the old assembleDebug job could never
-# produce anything publishable
-#
-# required repository secrets:
-#   RELEASE_KEYSTORE_BASE64   base64 of your .jks  ->  base64 -w0 release.jks
-#   RELEASE_STORE_PASSWORD
-#   RELEASE_KEY_ALIAS
-#   RELEASE_KEY_PASSWORD
-
 on:
   workflow_dispatch:
     inputs:
