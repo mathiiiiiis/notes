@@ -74,6 +74,10 @@ class NotesViewModel(
 
     suspend fun delete(id: Long): Note? = repo.delete(id)
 
+    fun deleteDetached(id: Long) {
+        viewModelScope.launch { repo.delete(id) }
+    }
+
     fun restore(note: Note) {
         viewModelScope.launch { repo.restore(note) }
     }

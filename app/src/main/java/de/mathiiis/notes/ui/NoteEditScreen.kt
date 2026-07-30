@@ -327,7 +327,7 @@ fun NoteEditScreen(
                         confirmDelete = false
                         deleted = true
                         if (currentId != NEW_NOTE_ID) {
-                            scope.launch { viewModel.delete(currentId) }
+                            viewModel.deleteDetached(currentId)
                         }
                         onBack()
                     },
