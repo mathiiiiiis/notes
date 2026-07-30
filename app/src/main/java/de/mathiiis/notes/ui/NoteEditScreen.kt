@@ -253,6 +253,7 @@ fun NoteEditScreen(
                 if (preview) {
                     Markdown(
                         content = Md.forRender(context, field.text),
+                        typography = noteMarkdownTypography(),
                         imageTransformer = Coil3ImageTransformerImpl,
                         modifier =
                             Modifier
