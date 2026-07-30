@@ -27,6 +27,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.PushPin
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.Delete
@@ -302,6 +303,7 @@ private fun SwipeableNoteCard(
             )
         }
 
+    val pinned by rememberUpdatedState(note.pinned)
     val pinToggle by rememberUpdatedState(onPinToggle)
     val delete by rememberUpdatedState(onDelete)
 
@@ -313,7 +315,13 @@ private fun SwipeableNoteCard(
                 scope.launch { state.reset() }
             }
 
-            SwipeToDismissBoxValue.EndToStart -> delete()
+            SwipeToDismissBoxValue.EndToStart ->
+                if (pinned) {
+                    pinToggle()
+                    scope.launch { state.reset() }
+                } else {
+                    delete()
+                }
 
             SwipeToDismissBoxValue.Settled -> Unit
         }
@@ -321,7 +329,9 @@ private fun SwipeableNoteCard(
 
     SwipeToDismissBox(
         state = state,
-        backgroundContent = { SwipeBackground(state.dismissDirection, note.pinned) },
+        backgroundContent = {
+            SwipeBackground(direction = state.dismissDirection, pinned = note.pinned)
+        },
         content = {
             NoteCard(
                 note = note,
@@ -338,13 +348,14 @@ private fun SwipeBackground(
     direction: SwipeToDismissBoxValue,
     pinned: Boolean,
 ) {
-    val deleting = direction == SwipeToDismissBoxValue.EndToStart
+    val deleting = direction == SwipeToDismissBoxValue.EndToStart && !pinned
+
     val container by animateColorAsState(
         targetValue =
-            when (direction) {
-                SwipeToDismissBoxValue.EndToStart -> MaterialTheme.colorScheme.errorContainer
-                SwipeToDismissBoxValue.StartToEnd -> MaterialTheme.colorScheme.secondaryContainer
-                SwipeToDismissBoxValue.Settled -> Color.Transparent
+            when {
+                direction == SwipeToDismissBoxValue.Settled -> Color.Transparent
+                deleting -> MaterialTheme.colorScheme.errorContainer
+                else -> MaterialTheme.colorScheme.tertiaryContainer
             },
         label = "swipe-bg",
     )
@@ -356,18 +367,27 @@ private fun SwipeBackground(
                 .clip(RoundedCornerShape(28.dp))
                 .background(container)
                 .padding(horizontal = 24.dp),
-        contentAlignment = if (deleting) Alignment.CenterEnd else Alignment.CenterStart,
+        contentAlignment =
+            if (direction == SwipeToDismissBoxValue.EndToStart) {
+                Alignment.CenterEnd
+            } else {
+                Alignment.CenterStart
+            },
     ) {
         Icon(
-            imageVector = if (deleting) Icons.Rounded.Delete else Icons.Rounded.PushPin,
+            imageVector =
+                when {
+                    deleting -> Icons.Rounded.Delete
+                    pinned -> Icons.Outlined.PushPin
+                    else -> Icons.Rounded.PushPin
+                },
             contentDescription = null,
             tint =
                 if (deleting) {
                     MaterialTheme.colorScheme.onErrorContainer
                 } else {
-                    MaterialTheme.colorScheme.onSecondaryContainer
+                    MaterialTheme.colorScheme.onTertiaryContainer
                 },
-            modifier = Modifier.rotate(if (pinned) 45f else 0f),
         )
     }
 }
