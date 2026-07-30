@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  room runs in wal mode, so the sidecar files have to travel with the database
+  or a restore can land on a stale snapshot. images live in filesDir/images and
+  were previously left out, which restored notes with broken image links.
+-->
+<full-backup-content>
+    <include domain="database" path="notes.db" />
+    <include domain="database" path="notes.db-wal" />
+    <include domain="database" path="notes.db-shm" />
+    <include domain="file" path="images/" />
+</full-backup-content>

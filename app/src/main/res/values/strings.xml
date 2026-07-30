@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Notes</string>
+
+    <!-- ==== list ==== -->
+    <string name="notes_title">Notes</string>
+    <plurals name="note_count">
+        <item quantity="one">%d note</item>
+        <item quantity="other">%d notes</item>
+    </plurals>
+    <string name="new_note">New note</string>
+    <string name="untitled">Untitled note</string>
+    <string name="pinned">Pinned</string>
+
+    <!-- ==== search ==== -->
+    <string name="search">Search</string>
+    <string name="search_hint">Search notes</string>
+    <string name="search_clear">Clear search</string>
+    <string name="search_close">Close search</string>
+
+    <!-- ==== empty states ==== -->
+    <string name="empty_title">Nothing written yet</string>
+    <string name="empty_body">Tap New note to start your first one.</string>
+    <string name="empty_search_title">No matches</string>
+    <string name="empty_search_body">No note contains \u201c%1$s\u201d.</string>
+
+    <!-- ==== editor ==== -->
+    <string name="editor_placeholder">Start writing. Markdown supported.</string>
+    <string name="back">Back</string>
+    <string name="pin">Pin note</string>
+    <string name="unpin">Unpin note</string>
+    <string name="preview">Preview</string>
+    <string name="edit">Edit</string>
+    <string name="insert_image">Insert image</string>
+    <string name="format_bold">Bold</string>
+    <string name="format_italic">Italic</string>
+    <string name="format_heading">Heading</string>
+    <string name="format_bullet">Bullet list</string>
+    <string name="format_checkbox">Checklist item</string>
+    <string name="format_code">Code</string>
+
+    <!-- ==== delete ==== -->
+    <string name="delete">Delete</string>
+    <string name="delete_note">Delete note</string>
+    <string name="delete_confirm_title">Delete this note?</string>
+    <string name="delete_confirm_body">This cannot be undone from here.</string>
+    <string name="cancel">Cancel</string>
+    <string name="note_deleted">Note deleted</string>
+    <string name="undo">Undo</string>
+
+    <!-- ==== accessibility ==== -->
+    <string name="a11y_note_card">Note: %1$s</string>
+</resources>

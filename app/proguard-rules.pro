@@ -1,0 +1,3 @@
+-keep class de.mathiiis.notes.data.** { *; }
+-keepattributes SourceFile,LineNumberTable
+-renamesourcefileattribute SourceFile
