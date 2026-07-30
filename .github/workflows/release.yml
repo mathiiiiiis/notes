@@ -9,10 +9,16 @@ on:
       version_code:
         description: "version code, must increase on every play upload"
         required: true
+      make_github_release:
+        description: "also create a github release with the apk attached"
+        type: boolean
+        default: false
 
 jobs:
-  aab:
+  build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
 
     steps:
       - name: checkout
@@ -40,16 +46,31 @@ jobs:
           fi
           echo "$KEYSTORE" | base64 -d > "$RUNNER_TEMP/release.jks"
 
-      - name: bundle release
+      - name: assemble aab and apk
         env:
           RELEASE_STORE_FILE: ${{ runner.temp }}/release.jks
           RELEASE_STORE_PASSWORD: ${{ secrets.RELEASE_STORE_PASSWORD }}
           RELEASE_KEY_ALIAS: ${{ secrets.RELEASE_KEY_ALIAS }}
           RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
         run: |
-          ./gradlew bundleRelease --no-daemon \
+          ./gradlew bundleRelease assembleRelease --no-daemon \
             -PversionName="${{ inputs.version_name }}" \
             -PversionCode="${{ inputs.version_code }}"
+
+      - name: rename apk
+        run: |
+          mkdir -p dist
+          cp app/build/outputs/bundle/release/app-release.aab \
+             "dist/notes-${{ inputs.version_name }}.aab"
+          cp app/build/outputs/apk/release/app-release.apk \
+             "dist/notes-${{ inputs.version_name }}.apk"
+          ls -lh dist
+
+      - name: verify apk signature
+        run: |
+          BT=$(ls -d "$ANDROID_HOME"/build-tools/* | sort -V | tail -1)
+          "$BT/apksigner" verify --print-certs \
+            "dist/notes-${{ inputs.version_name }}.apk"
 
       - name: shred keystore
         if: always()
@@ -59,7 +80,14 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: notes-release-aab
-          path: app/build/outputs/bundle/release/app-release.aab
+          path: dist/*.aab
+          if-no-files-found: error
+
+      - name: upload apk
+        uses: actions/upload-artifact@v4
+        with:
+          name: notes-release-apk
+          path: dist/*.apk
           if-no-files-found: error
 
       - name: upload mapping
@@ -68,3 +96,13 @@ jobs:
           name: notes-release-mapping
           path: app/build/outputs/mapping/release/mapping.txt
           if-no-files-found: warn
+
+      - name: github release
+        if: ${{ inputs.make_github_release }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release create "v${{ inputs.version_name }}" \
+            "dist/notes-${{ inputs.version_name }}.apk" \
+            --title "v${{ inputs.version_name }}" \
+            --generate-notes
