@@ -131,10 +131,16 @@ fun NotesListScreen(
                 if (isSearching) {
                     SearchTopBar(
                         query = query,
-                        onQueryChange = viewModel::setQuery,
+                        onQueryChange = { value ->
+                            viewModel.setQuery(value)
+                            // new list, so do not open it mid scroll
+                            scope.launch { listState.scrollToItem(0) }
+                        },
                         onClose = {
                             viewModel.setQuery("")
                             searching = false
+                            scrollBehavior.state.heightOffset = 0f
+                            scrollBehavior.state.contentOffset = 0f
                         },
                     )
                 } else {
@@ -144,7 +150,13 @@ fun NotesListScreen(
                             Text(pluralStringResource(R.plurals.note_count, total, total))
                         },
                         actions = {
-                            IconButton(onClick = { searching = true }) {
+                            IconButton(
+                                onClick = {
+                                    searching = true
+                                    scrollBehavior.state.heightOffset = 0f
+                                    scrollBehavior.state.contentOffset = 0f
+                                },
+                            ) {
                                 Icon(
                                     Icons.Rounded.Search,
                                     contentDescription = stringResource(R.string.search),
