@@ -49,6 +49,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
@@ -129,7 +130,9 @@ fun NoteEditScreen(
 
     // ==== focus the field when editing ====
     LaunchedEffect(loaded, preview) {
-        if (loaded && !preview) focusRequester.requestFocus()
+        if (!loaded || preview) return@LaunchedEffect
+        withFrameNanos { }
+        runCatching { focusRequester.requestFocus() }
     }
 
     // ==== flush on disposal ====
@@ -309,8 +312,7 @@ fun NoteEditScreen(
                             .align(Alignment.BottomCenter)
                             .onSizeChanged { size ->
                                 toolbarInset = with(density) { size.height.toDp() } + 8.dp
-                            }
-                            .padding(bottom = 16.dp),
+                            }.padding(bottom = 16.dp),
                 )
             }
         }
