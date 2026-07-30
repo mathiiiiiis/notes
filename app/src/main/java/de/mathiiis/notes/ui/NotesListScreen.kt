@@ -14,6 +14,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.calculateEndPadding
+import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -76,6 +78,7 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
@@ -113,6 +116,7 @@ fun NotesListScreen(
 
     val deletedMessage = stringResource(R.string.note_deleted)
     val undoLabel = stringResource(R.string.undo)
+    val layoutDirection = LocalLayoutDirection.current
 
     val fabExpanded by remember {
         derivedStateOf {
@@ -204,8 +208,8 @@ fun NotesListScreen(
                     modifier = Modifier.fillMaxSize(),
                     contentPadding =
                         PaddingValues(
-                            start = 16.dp,
-                            end = 16.dp,
+                            start = 16.dp + padding.calculateStartPadding(layoutDirection),
+                            end = 16.dp + padding.calculateEndPadding(layoutDirection),
                             top = padding.calculateTopPadding() + 8.dp,
                             bottom = padding.calculateBottomPadding() + 104.dp,
                         ),
